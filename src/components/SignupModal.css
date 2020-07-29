@@ -1,0 +1,23 @@
+.signup__form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.Input {
+    width: 90%;
+}
+
+#register__warning {
+    text-align: center;
+    margin: 15px auto auto 0;
+}
+
+#register__warning a {
+    color:blue;
+    cursor: pointer;
+}
+
+#register__warning a:visited, #register__warning a:hover,  #register__warning a:active {
+    color:purple
+}
+

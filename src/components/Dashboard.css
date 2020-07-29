@@ -1,0 +1,11 @@
+.dashboard {
+    margin-top: 30px;
+    padding: 0px 15%;
+}
+.dashboard__posts { 
+    padding: 20px 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+}

@@ -1,0 +1,152 @@
+.profile__container {
+  padding: 0px 0px 25px;
+  margin-top: 20px;
+}
+
+.profile__header {
+  padding: 0px 18% 20px;
+  display: flex;
+  border-bottom: 1px solid lightgray;
+}
+
+.profile__picContainer {
+  padding: 0px 25px;
+}
+
+.image__container {
+  position: relative;
+  border-radius: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+.image__container::before {
+  margin: 0;
+  padding: 0;
+  z-index: 100;
+  content: '';
+  border: 2px solid lightgray;
+  border-radius: 100%;
+
+  position: absolute;
+  top: -6px;
+  bottom: -6px;
+  left: -6px;
+  right: -6px;
+}
+
+.profile__image {
+  margin: 0;
+  padding: 0;
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+
+}
+
+.profile__userData {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.profile__userInfo {
+  display: flex;
+}
+
+.profile__username {
+  font-weight: 300;
+}
+
+.profile__userInfo .profile__followBtn:nth-of-type(1) {
+  margin-left: 20px;
+}
+
+.profile__postAndFollowersInfoContainer {
+  padding: 10px 0px;
+  margin-top: 15px;
+}
+
+.profile__postAndFollowersInfoList {
+  display: flex;
+  flex-direction: row;
+  list-style: none;
+  padding: 0;
+}
+
+.profile__postAndFollowersInfoItem {
+  font-weight: normal;
+  font-size: 15px;
+  margin: 0px 15px 0px 0px;
+}
+
+.profile__picsContainer {
+  padding: 0px 15% 0px;
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+  grid-column-gap: 2.5%;
+  grid-row-gap: 2.5%;
+  cursor: pointer;
+}
+.pic__container {
+  width: 100%;
+  height: 100%;
+
+  padding: 0;
+  position: relative;
+  margin: 0;
+}
+.profile__pic {
+  object-fit: cover;
+  width: 100%;
+  height: 45vh;
+  padding: 0;
+  margin: 0;
+}
+
+.profile__pic:hover {
+  mix-blend-mode: darken;
+  opacity: 0.8;
+}
+
+.icons__container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  opacity: 0;
+}
+
+.icon {
+  padding: 0px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.material-icons {
+  font-size: 25px;
+  color: white;
+}
+
+.icons__container:hover {
+  opacity: 1;
+}
+
+.icon span {
+  font: 40px;
+  color: white;
+  font-weight: bold;
+  margin-left: 5px;
+}

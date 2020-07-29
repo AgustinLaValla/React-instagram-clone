@@ -1,25 +1,43 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState, createContext, useEffect } from 'react';
 import './App.css';
+import { BrowserRouter as Router, Switch } from 'react-router-dom';
+import { Dashboard } from './components/Dashboard';
+import { Profile } from './components/Profile';
+import { GuardProvider, GuardedRoute } from 'react-router-guards';
+import { Header } from './layout/Header';
+import { auth } from './firebase';
+
+export const AuthContext = createContext(null);
+const requireLogin = (to, from, next) => to.meta.auth ? next.redirect('/') : next()
 
 function App() {
+
+  const [userState, setUserState] = useState(null);
+
+  const updateCurrentUserPic = async (profilePic) => await auth.updateCurrentUser({photoURL:profilePic})
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((authState) => setUserState(authState));
+    return () => unsubscribe ? unsubscribe() : null;
+  }, [])
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+
+      <Header userState={userState} auth={auth} />
+
+      <GuardProvider guards={[requireLogin]} loading={Dashboard} error={Dashboard}>
+        <Switch>
+          <AuthContext.Provider value={{ userState, updateCurrentUserPic, auth }}>
+            <GuardedRoute exact path="/" component={Dashboard} />
+            <GuardedRoute exact path="/profile/:id/:viwerId" component={Profile} meta={{ auth: !userState }} />
+          </AuthContext.Provider>
+        </Switch>
+      </GuardProvider>
+
+    </Router>
+
   );
 }
 
