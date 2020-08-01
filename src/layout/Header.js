@@ -9,6 +9,7 @@ import { DropdownMenu } from '../components/DropdownMenu';
 import { useHistory } from 'react-router-dom';
 import { SignupModal } from '../components/SignupModal';
 import { profilePic } from '../utils/utils';
+import { UploadImageModal } from '../components/UploadImageModal';
 
 const useStyles = makeStyles((theme) => ({
     avatar: {
@@ -28,6 +29,7 @@ export const Header = ({ userState, auth }) => {
     const [searchMenuAnchorEl, setSearchMenuAnchorEl] = useState(null);
 
     const [openModal, setOpenModal] = useState(false);
+    const [openUploadImageModal, setOpenUploadImageModal] = useState(false);
 
     const [profilePicUrl, setProfilePicUrl] = useState(profilePic);
 
@@ -59,11 +61,11 @@ export const Header = ({ userState, auth }) => {
         }
     }
 
-    const handleCloseModal = () => setOpenModal(false);
+    const handleCloseModal = () => openModal ? setOpenModal(false) : setOpenUploadImageModal(false);
 
     useEffect(() => {
         let unsubscribe;
-        if(userState) {
+        if (userState) {
             unsubscribe = db.collection('users').doc(userState.uid).onSnapshot((doc) => {
                 setProfilePicUrl(doc.data().profilePic);
             })
@@ -138,7 +140,7 @@ export const Header = ({ userState, auth }) => {
 
                 <Link to='/'>
                     <div className="header__iconContainer">
-                        <svg className="header__icon" id="svg-i" fill="#262626" height="22" viewBox="0 0 48 48" width="22">
+                        <svg onClick={() => userState ? setOpenUploadImageModal(true) : setOpenModal(true)} className="header__icon" id="svg-i" fill="#262626" height="22" viewBox="0 0 48 48" width="22">
                             <path d={picSvg.path} />
                         </svg>
                     </div>
@@ -158,8 +160,15 @@ export const Header = ({ userState, auth }) => {
 
             </div>
 
-            {/* Modal */}
+            {/* Sign Modal */}
             <SignupModal open={openModal} handleClose={handleCloseModal} setOpenModal={setOpenModal} />
+            {/* Upload Post modal */}
+            <UploadImageModal
+                open={openUploadImageModal}
+                handleClose={handleCloseModal}
+                userState={userState}
+                setOpenUploadImageModal={setOpenUploadImageModal}
+            />
         </div>
     )
 }

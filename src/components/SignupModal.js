@@ -72,7 +72,7 @@ export const SignupModal = ({ open, setOpenModal, handleClose, auth }) => {
    
 
     const showUsername = modalAction === 'signup' ?
-        <Input style={{ width: '100%' }} type="text" name="username" placeholder="Username" value={credentials.username} onChange={handleChange} />
+        <Input className="dashboard__input" style={{ width: '100%' }} type="text" name="username" placeholder="Username" value={credentials.username} onChange={handleChange} />
         : null;
 
     return (
@@ -90,8 +90,8 @@ export const SignupModal = ({ open, setOpenModal, handleClose, auth }) => {
                 </center>
                 <form onSubmit={handleLogin} className="signup__form">
                     {showUsername}
-                    <Input style={{ width: '100%' }} type="email" name="email" placeholder="Email" value={credentials.email} onChange={handleChange} />
-                    <Input style={{ width: '100%' }} type="password" name="password" value={credentials.password} onChange={handleChange} />
+                    <Input className="dashboard__input" style={{ width: '100%' }} type="email" name="email" placeholder="Email" value={credentials.email} onChange={handleChange} />
+                    <Input className="dashboard__input" style={{ width: '100%' }} type="password" name="password" value={credentials.password} onChange={handleChange} />
                     <Button variant="contained" type="submit">{modalAction === 'signup' ? 'Register' : 'Login'}</Button>
                 </form>
 

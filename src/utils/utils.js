@@ -6,3 +6,6 @@ export const getTimeStamp = (dateInSeconds) => {
     const date = moment.unix(dateInSeconds);
     return moment(date).fromNow();
 }
+
+export const dropzoneStyles = { width:'100%', minHeight:'300px', maxHeight:'500px', textAlign:'center', display:'flex', justifyContent:'center', alignItems:'center' };
+export const FFmodalAction = {SHOW_FOLLOWERS:'showFollowers', SHOW_FOLLOWING:'showFollowig'};

@@ -6,12 +6,27 @@ import { Button, Tooltip, makeStyles } from '@material-ui/core';
 import './Profile.css'
 import { PostDetails } from './PostDetails';
 import { AuthContext } from '../App';
+import { FollowingFollowersModal } from './FollowingFollowersModal';
+import { FFmodalAction } from '../utils/utils';
+import { EditProfileModal } from './EditProfileModal';
 
-const useStyles = makeStyles(() => ({
+
+const useStyles = makeStyles((theme) => ({
     tooltip: {
         fontSize: '15px'
-    }
+    },
+    listItem: {
+        display: 'flex',
+        alignItems: 'center',
+        paddingBottom: '20px',
+    },
+    listItemText: {
+        fontWeight: '500',
+        paddingRight: '10px'
+    },
 }))
+
+
 
 export const Profile = () => {
     const classes = useStyles();
@@ -22,11 +37,18 @@ export const Profile = () => {
     const [followers, setFollowers] = useState([]);
     const [following, setFollowing] = useState([]);
     const [isFollowing, setIsFollowing] = useState(false);
+    const [followersData, setFollowersData] = useState([]);
+    const [usersFollowedList, setUsersFollowedList] = useState([]);
     const [openPostDetails, setOpenPostDetails] = useState(false);
     const [postDetailsId, setPostDetailsId] = useState(null);
+    const [openFollowingFollowersModal, setOpenFollowingFollowersModal] = useState(false);
+    const [followingFollowerModalAction, setFollowingFollowerModalAction] = useState(FFmodalAction.SHOW_FOLLOWERS);
+    const [openEditProfileModal, setOpenEditProfileModal] = useState(false);
 
-    const {userState} = useContext(AuthContext);
+    const { userState, auth } = useContext(AuthContext);
     const fileInput = useRef();
+
+
 
     const uploadImage = (file) => {
         if (file.type.indexOf('image') === -1) return alert('Only image type is allowed');
@@ -40,6 +62,7 @@ export const Profile = () => {
                 try {
                     const profilePic = await storage.ref('profilePics').child(file.name).getDownloadURL();
                     await db.collection('users').doc(id).update({ profilePic });
+                    await auth.currentUser.updateProfile({photoURL:profilePic});
                     alert('UPDATED');
                 } catch (error) {
                     alert(error.message);
@@ -68,6 +91,12 @@ export const Profile = () => {
         setOpenPostDetails(false);
     };
 
+    const showFollowers = (action) => {
+        setFollowingFollowerModalAction(action);
+        setOpenFollowingFollowersModal(true);
+    }
+
+
     useEffect(() => {
 
         const unsubscribe = db.collection('users').doc(id).onSnapshot((snap) => {
@@ -88,32 +117,45 @@ export const Profile = () => {
     }, [id]);
 
     useEffect(() => {
-        const unsubscribe = db.collection('users').doc(id).collection('followers').where('follower', '==', viwerId).onSnapshot(snap => {
-            if (!snap.empty) {
-                setIsFollowing(true);
-            } else {
-                setIsFollowing(false);
-            }
-        });
 
-        return () => unsubscribe();
+        followers.includes(viwerId) ? setIsFollowing(true) : setIsFollowing(false);
 
-    }, [id, viwerId])
+    }, [followers, viwerId])
+
+    useEffect(() => {
+        let unsubscribe;
+        if (followers.length > 0) {
+            unsubscribe = db.collection('users').where('id', 'in', followers).onSnapshot(snap => {
+                setFollowersData(snap.docs.map(doc => doc.data()));
+            })
+        }
+        return () => unsubscribe ? unsubscribe() : null;
+    }, [followers]);
+
+    useEffect(() => {
+        let unsubscribe;
+        if (following.length > 0) {
+            unsubscribe = db.collection('users').where('id', 'in', following).onSnapshot(snap => {
+                setUsersFollowedList(snap.docs.map(doc => doc.data()));
+            })
+        }
+        return () => unsubscribe ? unsubscribe() : null;
+    }, [following]);
 
     useEffect(() => {
         const unsubscribe = db.collection('users').doc(id).collection('followers').onSnapshot(snap => {
-            setFollowers(snap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+            setFollowers(snap.docs.map(doc => doc.data().follower));
+
         });
         return () => unsubscribe();
     }, [id]);
 
     useEffect(() => {
         const unsubscribe = db.collection('users').doc(id).collection('following').onSnapshot(snap => {
-            setFollowing(snap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
+            setFollowing(snap.docs.map(doc => doc.data().userFollowed));
         });
         return () => unsubscribe();
     }, [id]);
-
 
     return (
         <div className="profile__container">
@@ -145,15 +187,23 @@ export const Profile = () => {
                                     ? <Button className="profile__followBtn" variant="outlined" onClick={() => !isFollowing ? follow() : unFollow()} >
                                         {!isFollowing ? 'Follow' : 'Unfollow'}
                                     </Button>
-                                    : null}
+                                    :
+                                    <Button variant="outlined" className="profile__editBtn" onClick={() => setOpenEditProfileModal(true)}>
+                                        Edit Profile
+                                    </Button>
+                                }
                             </div>
                             <div className="profile__postAndFollowersInfoContainer">
                                 <ul className="profile__postAndFollowersInfoList">
-                                    <li className="profile__postAndFollowersInfoItem"><strong>{posts.length} </strong>Posts</li>
-                                    <li className="profile__postAndFollowersInfoItem"><strong>{followers.length} </strong>Followers</li>
-                                    <li className="profile__postAndFollowersInfoItem"><strong>{following.length} </strong>Following</li>
+                                    <li className="profile__postAndFollowersInfoItem" style={{ cursor: 'default !important' }}><strong>{posts.length} </strong>Posts</li>
+                                    <li onClick={() => showFollowers(FFmodalAction.SHOW_FOLLOWERS)} className="profile__postAndFollowersInfoItem"><strong>{followers.length} </strong>Followers</li>
+                                    <li onClick={() => showFollowers(FFmodalAction.SHOW_FOLLOWING)} className="profile__postAndFollowersInfoItem"><strong>{following.length} </strong>Following</li>
                                 </ul>
                             </div>
+                            {userData.description &&
+                                <div className="profile__descriptionContainer">
+                                    <h5 style={{fontWeight:'400'}}>{userData.description}</h5>
+                                </div>}
                         </div>
                     </header>
 
@@ -181,7 +231,24 @@ export const Profile = () => {
             }
 
             {/* Post Details Modal */}
-            <PostDetails open={openPostDetails} handleClose={handleCloseModal} postId={postDetailsId} viwerUser={userState}/>
+            <PostDetails open={openPostDetails} handleClose={handleCloseModal} postId={postDetailsId} viwerUser={userState} />
+
+            {/* Following - Followers Modal */}
+            <FollowingFollowersModal
+                open={openFollowingFollowersModal}
+                handleClose={() => setOpenFollowingFollowersModal(false)}
+                data={followingFollowerModalAction === FFmodalAction.SHOW_FOLLOWERS ? followersData : usersFollowedList}
+                viwerId={viwerId}
+                userSpiedId={id}
+                action={followingFollowerModalAction}
+            />
+
+            {/* Edit Profile Modal */}
+            <EditProfileModal
+                open={openEditProfileModal}
+                handleClose={() => setOpenEditProfileModal(false)}
+                userData={userData}
+            />
         </div>
     )
 }

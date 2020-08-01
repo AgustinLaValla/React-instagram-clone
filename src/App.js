@@ -1,6 +1,6 @@
 import React, { useState, createContext, useEffect } from 'react';
 import './App.css';
-import { BrowserRouter as Router, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
 import { Dashboard } from './components/Dashboard';
 import { Profile } from './components/Profile';
 import { GuardProvider, GuardedRoute } from 'react-router-guards';
@@ -32,6 +32,7 @@ function App() {
           <AuthContext.Provider value={{ userState, updateCurrentUserPic, auth }}>
             <GuardedRoute exact path="/" component={Dashboard} />
             <GuardedRoute exact path="/profile/:id/:viwerId" component={Profile} meta={{ auth: !userState }} />
+            <Redirect to='/' />
           </AuthContext.Provider>
         </Switch>
       </GuardProvider>

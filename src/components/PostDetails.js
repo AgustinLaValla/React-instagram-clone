@@ -193,7 +193,7 @@ export const PostDetails = ({ open, handleClose, postId, viwerUser }) => {
                                 <span style={{ fontWeight: '500', fontSize: '14px' }}>{currentUser ? currentUser.username : null}</span>
 
                                 <div style={{ display: 'inline-block', paddingLeft: '10px' }}>
-                                    <span onClick={() => !isFollowing ? follow() : unFollow()} style={{ fontWeight: 'bold', fontSize: '15px', color: '#0095f6' }}>
+                                    <span onClick={() => !isFollowing ? follow() : unFollow()} style={{ fontWeight: 'bold', fontSize: '15px', color: '#0095f6', cursor:'pointer' }}>
                                         {isFollowing ? 'Unfollow' : 'Follow'}
                                     </span>
                                 </div>
@@ -233,7 +233,7 @@ export const PostDetails = ({ open, handleClose, postId, viwerUser }) => {
                                 {comments.map(comment => (
                                     <ListItem alignItems="flex-start">
                                         <ListItemAvatar>
-                                            <Avatar alt={comment.username} src={getUserProfilePic(comment.userId)}></Avatar>
+                                            <Avatar src={async () => {return await getUserProfilePic(comment.userId)}}></Avatar>
                                         </ListItemAvatar>
 
                                         <ListItemText

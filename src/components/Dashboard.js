@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Post } from './Post';
 import { SignupModal } from './SignupModal';
-import { ImageUpload } from './ImageUpload';
 import { db } from '../firebase';
 
 import './Dashboard.css'
@@ -15,7 +14,7 @@ export const Dashboard = () => {
     const [openPostDetailsModal, setOpenPostDetailsModal] = useState(false);
     const [postId, setPostId] = useState(null);
 
-    const {userState, auth}  = useContext(AuthContext);
+    const { userState, auth } = useContext(AuthContext);
 
 
     const handleOpenModal = () => !userState ? setOpenModal(true) : setOpenModal(false);
@@ -31,7 +30,7 @@ export const Dashboard = () => {
         }
     }
     const handleClose = () => openModal ? setOpenModal(false) : setOpenPostDetailsModal(false);
-    
+
 
 
     useEffect(() => {
@@ -42,11 +41,25 @@ export const Dashboard = () => {
         });
     }, []);
 
+    useEffect(() => {
+        const loginTimeout = setTimeout(() => {
+            if (!userState) {
+                setOpenModal(true);
+            }
+        }, 2500);
+
+        if(userState) {
+            clearTimeout(loginTimeout);
+        }
+
+        return () => clearTimeout(loginTimeout);
+
+    }, [userState])
 
     return (
         <div className="dashboard">
             {/* Modal */}
-            <SignupModal open={openModal} handleClose={handleClose} setOpenModal={setOpenModal} auth={auth}/>
+            <SignupModal open={openModal} handleClose={handleClose} setOpenModal={setOpenModal} auth={auth} />
 
             {/* Posts */}
             <div className="dashboard__posts">
@@ -62,8 +75,6 @@ export const Dashboard = () => {
 
             </div>
 
-            {/* Post upload */}
-            {userState && userState.displayName ? <ImageUpload userState={userState}/> : <h3>Sorry, you need to be logged to upload</h3>}
             {/* Post Modal */}
             <PostDetails open={openPostDetailsModal} handleClose={handleClose} postId={postId} viwerUser={userState} />
 

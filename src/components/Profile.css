@@ -62,13 +62,16 @@
   font-weight: 300;
 }
 
-.profile__userInfo .profile__followBtn:nth-of-type(1) {
+.profile__userInfo .profile__followBtn, .profile__userInfo .profile__editBtn:nth-of-type(1) {
   margin-left: 20px;
 }
+
+
 
 .profile__postAndFollowersInfoContainer {
   padding: 10px 0px;
   margin-top: 15px;
+  cursor: pointer;
 }
 
 .profile__postAndFollowersInfoList {
@@ -82,6 +85,10 @@
   font-weight: normal;
   font-size: 15px;
   margin: 0px 15px 0px 0px;
+}
+
+.profile__descriptionContainer {
+  display: flex;
 }
 
 .profile__picsContainer {

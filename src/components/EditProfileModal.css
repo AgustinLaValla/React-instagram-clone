@@ -1,0 +1,33 @@
+.editProfile__modalHeader {
+    width:100%; 
+    text-align:center;
+    padding: 10px 0px;
+    border-bottom: 1px solid lightgrey;
+}
+.editProfile__modalTitle {
+    font-weight: 500;
+    padding-left: 10px;
+}
+.editProfile__timerBox {
+    float: right;
+    padding-right: 10px;
+}
+
+.editProfile__itemDescription { 
+    font-weight: 400;
+    padding: 10px 0px;
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.editProfile__itemDescription:hover {
+    background-color: #d2d2d2;
+}
+
+.DataModal__inputBox {
+    padding: 10px 5px;
+    width: 80%;
+    margin: 10px auto;
+}
