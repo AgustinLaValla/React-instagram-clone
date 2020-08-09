@@ -4,10 +4,12 @@ import { profilePic, FFmodalAction } from '../utils/utils';
 import { db } from '../firebase';
 import { closeSVG } from '../utils/icons-data';
 import './FollowingFollowersModal.css';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
-const modalStyle = { top: '50%', left: '50%', transform: 'translate(-50%, -50%)', overflowY: 'auto' };
+const modalStyle = { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
 
 const useStyles = makeStyles(theme => ({
+
     paper: {
         position: 'absolute',
         width: 400,
@@ -17,6 +19,7 @@ const useStyles = makeStyles(theme => ({
         outline: 'none',
         borderRadius: '15px',
         boxShadow: theme.shadows[5],
+
 
     },
     listItem: {
@@ -30,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const FollowingFollowersModal = ({ open, handleClose, data, viwerId, action }) => {
+export const FollowingFollowersModal = ({ open, handleClose, data, viwerId, action, listLength, onscroll }) => {
     const classes = useStyles();
 
 
@@ -72,10 +75,12 @@ export const FollowingFollowersModal = ({ open, handleClose, data, viwerId, acti
         return () => unsubscribe ? unsubscribe() : null
     }, [viwerId])
 
-    useEffect(() => console.log(viwerFollowingList), [viwerFollowingList]);
 
     return (
-        <Modal open={open} onClose={handleClose} aria-labelledby="simple-modal-title" aria-describedby="simple-modal-description">
+
+
+        <Modal className={classes.modal} open={open} onClose={handleClose}>
+
             <div style={modalStyle} className={classes.paper}>
                 <div className="FollowingFollowers__modalHeader">
                     <span className="FollowingFollowers__modalTitle">
@@ -89,35 +94,43 @@ export const FollowingFollowersModal = ({ open, handleClose, data, viwerId, acti
                             height="24"
                             viewBox="0 0 48 48"
                             width="24"
-                            style={{cursor:'pointer'}}
+                            style={{ cursor: 'pointer' }}
                         >
                             <path clip-rule="evenodd" d={closeSVG.path} fill-rule="evenodd" />
                         </svg>
                     </div>
                 </div>
-                {
-                    data.map(user => (
-                        <ListItem alignItems="flex-start" className={classes.listItem}>
-                            <ListItemAvatar>
-                                <Avatar alt={user.username} src={user.profilePic ? user.profilePic : profilePic}></Avatar>
-                            </ListItemAvatar>
-                            
-                            <ListItemText
-                            className="followingFollower__username"
-                            primary={user.username}
-                            secondary={
-                                <Fragment>
-                                    {user.description ? user.description : null}
-                                </Fragment>
-                            }
-                        >
-                        </ListItemText>
 
-                            {user.id !== viwerId ? getSuitableButton(user.id) : null}
+                <InfiniteScroll
+                    dataLength={listLength}
+                    next={onscroll}
+                    hasMore={true}
+                    height={400 - 42}
+                >
+                    {
+                        data.map(user => (
+                            <ListItem alignItems="flex-start" className={classes.listItem}>
+                                <ListItemAvatar>
+                                    <Avatar alt={user.username} src={user.profilePic ? user.profilePic : profilePic}></Avatar>
+                                </ListItemAvatar>
 
-                        </ListItem>
-                    ))
-                }
+                                <ListItemText
+                                    className="followingFollower__username"
+                                    primary={user.username}
+                                    secondary={
+                                        <Fragment>
+                                            {user.description ? user.description : null}
+                                        </Fragment>
+                                    }
+                                >
+                                </ListItemText>
+
+                                {user.id !== viwerId ? getSuitableButton(user.id) : null}
+
+                            </ListItem>
+                        ))
+                    }
+                </InfiniteScroll>
             </div>
         </Modal>
     )

@@ -24,3 +24,11 @@ yarn-error.log*
 
 # db credentials
 src/config
+
+# firebase 
+.firebase
+.firebaserc
+firebase.json
+firestore.rules
+firestore.indexes.json
+storage.rules

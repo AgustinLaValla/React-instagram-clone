@@ -110,6 +110,14 @@ export const UploadImageModal = ({ open, handleClose, userState, setOpenUploadIm
                         likes: [],
                         comments: []
                     });
+                    const counter = await db.collection('posts-counter').get();
+                    if(counter.empty) {
+                        await db.collection('posts-counter').doc('-- post counter --').set({totalPosts:1});
+                    } else {
+                        await db.collection('posts-counter').doc('-- post counter --').update({
+                            totalPosts: firebase.firestore.FieldValue.increment(1)
+                        })
+                    }
                     setOpenLoadingModal(false);
                     setProgress(0);
                     setCaption('');

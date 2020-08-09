@@ -40,7 +40,7 @@ export const Header = ({ userState, auth }) => {
             auth.signOut();
             history.push('/');
         } else if (userState && action === 'Profile') {
-            history.push(`profile/${userState.uid}/${userState.uid}`);
+            history.push(`/profile/${userState.uid}/${userState.uid}`);
         }
         setAnchorEl(null);
     };

@@ -11,6 +11,10 @@
   margin: 10px 0px;
 }
 
+#signupmodal__submitBtn {
+  margin-top: 10px;
+}
+
 #register__warning {
   text-align: center;
   margin: 15px auto auto 0;

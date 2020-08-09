@@ -9,6 +9,7 @@ import { AuthContext } from '../App';
 import { FollowingFollowersModal } from './FollowingFollowersModal';
 import { FFmodalAction } from '../utils/utils';
 import { EditProfileModal } from './EditProfileModal';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -44,6 +45,9 @@ export const Profile = () => {
     const [openFollowingFollowersModal, setOpenFollowingFollowersModal] = useState(false);
     const [followingFollowerModalAction, setFollowingFollowerModalAction] = useState(FFmodalAction.SHOW_FOLLOWERS);
     const [openEditProfileModal, setOpenEditProfileModal] = useState(false);
+    const [userListLength, setUserListLength] = useState(0);
+    const [userQueryLimit, setUserQueryLimit] = useState(10);
+    const [currentUserListLength, setCurrentUserListLength] = useState(0);
 
     const { userState, auth } = useContext(AuthContext);
     const fileInput = useRef();
@@ -62,7 +66,7 @@ export const Profile = () => {
                 try {
                     const profilePic = await storage.ref('profilePics').child(file.name).getDownloadURL();
                     await db.collection('users').doc(id).update({ profilePic });
-                    await auth.currentUser.updateProfile({photoURL:profilePic});
+                    await auth.currentUser.updateProfile({ photoURL: profilePic });
                     alert('UPDATED');
                 } catch (error) {
                     alert(error.message);
@@ -89,13 +93,21 @@ export const Profile = () => {
     const handleCloseModal = () => {
         setPostDetailsId(null);
         setOpenPostDetails(false);
+        setUserQueryLimit(10);
     };
 
     const showFollowers = (action) => {
+        action === FFmodalAction.SHOW_FOLLOWERS ? setUserListLength(followers.length) : setUserListLength(following.length);
         setFollowingFollowerModalAction(action);
         setOpenFollowingFollowersModal(true);
     }
 
+    const scrolling = () => {
+        console.log('Pasé')
+        if (currentUserListLength < userListLength) {
+            setUserQueryLimit(userQueryLimit + 10);
+        }
+    }
 
     useEffect(() => {
 
@@ -125,22 +137,28 @@ export const Profile = () => {
     useEffect(() => {
         let unsubscribe;
         if (followers.length > 0) {
-            unsubscribe = db.collection('users').where('id', 'in', followers).onSnapshot(snap => {
+            unsubscribe = db.collection('users').where('id', 'in', followers).limit(userQueryLimit).onSnapshot(snap => {
                 setFollowersData(snap.docs.map(doc => doc.data()));
+                if (followingFollowerModalAction === FFmodalAction.SHOW_FOLLOWERS) {
+                    setCurrentUserListLength(snap.docs.length)
+                }
             })
         }
         return () => unsubscribe ? unsubscribe() : null;
-    }, [followers]);
+    }, [followers, userQueryLimit]);
 
     useEffect(() => {
         let unsubscribe;
         if (following.length > 0) {
-            unsubscribe = db.collection('users').where('id', 'in', following).onSnapshot(snap => {
+            unsubscribe = db.collection('users').where('id', 'in', following).limit(userQueryLimit).onSnapshot(snap => {
                 setUsersFollowedList(snap.docs.map(doc => doc.data()));
+                if (followingFollowerModalAction === FFmodalAction.SHOW_FOLLOWING) {
+                    setCurrentUserListLength(snap.docs.length)
+                }
             })
         }
         return () => unsubscribe ? unsubscribe() : null;
-    }, [following]);
+    }, [following, userQueryLimit]);
 
     useEffect(() => {
         const unsubscribe = db.collection('users').doc(id).collection('followers').onSnapshot(snap => {
@@ -156,6 +174,8 @@ export const Profile = () => {
         });
         return () => unsubscribe();
     }, [id]);
+
+    useEffect(() => console.table([{ userListLength, currentUserListLength, userQueryLimit }]), [userListLength, currentUserListLength, userQueryLimit])
 
     return (
         <div className="profile__container">
@@ -202,7 +222,7 @@ export const Profile = () => {
                             </div>
                             {userData.description &&
                                 <div className="profile__descriptionContainer">
-                                    <h5 style={{fontWeight:'400'}}>{userData.description}</h5>
+                                    <h5 style={{ fontWeight: '400' }}>{userData.description}</h5>
                                 </div>}
                         </div>
                     </header>
@@ -234,14 +254,18 @@ export const Profile = () => {
             <PostDetails open={openPostDetails} handleClose={handleCloseModal} postId={postDetailsId} viwerUser={userState} />
 
             {/* Following - Followers Modal */}
-            <FollowingFollowersModal
-                open={openFollowingFollowersModal}
-                handleClose={() => setOpenFollowingFollowersModal(false)}
-                data={followingFollowerModalAction === FFmodalAction.SHOW_FOLLOWERS ? followersData : usersFollowedList}
-                viwerId={viwerId}
-                userSpiedId={id}
-                action={followingFollowerModalAction}
-            />
+            
+                <FollowingFollowersModal
+                    open={openFollowingFollowersModal}
+                    handleClose={() => setOpenFollowingFollowersModal(false)}
+                    data={followingFollowerModalAction === FFmodalAction.SHOW_FOLLOWERS ? followersData : usersFollowedList}
+                    viwerId={viwerId}
+                    userSpiedId={id}
+                    action={followingFollowerModalAction}
+                    listLength={userListLength}
+                    onscroll={scrolling}
+                />
+
 
             {/* Edit Profile Modal */}
             <EditProfileModal

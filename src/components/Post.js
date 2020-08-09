@@ -50,7 +50,7 @@ export const Post = ({ post, user, handleOpenModal, handleOpenPostDetailsModal }
     };
 
     useEffect(() => {
-        if (user && post.likes.includes(user.uid)) {
+        if (user && post && post.likes && post.likes.includes(user.uid)) {
             setLikeIcon(likeSvg);
         } else {
             setLikeIcon(unLikeSvg);
@@ -59,7 +59,7 @@ export const Post = ({ post, user, handleOpenModal, handleOpenPostDetailsModal }
 
     useEffect(() => {
         let unsubscribe;
-        if (post) {
+        if (post && post.id) {
             unsubscribe = db.collection('posts').doc(post.id).collection('comments').orderBy('timestamp', 'asc').onSnapshot((snap) => {
                 setComments(snap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
             });
@@ -70,9 +70,12 @@ export const Post = ({ post, user, handleOpenModal, handleOpenPostDetailsModal }
     }, [post]);
 
     useEffect(() => {
-        db.collection('users').doc(post.userId).get().then(doc => {
-            setProfilePicUrl(doc.data().profilePic);
-        });
+        if (post && post.userId) {
+            db.collection('users').doc(post.userId).get().then(doc => {
+                setProfilePicUrl(doc.data().profilePic);
+            });
+
+        }
     }, [post.userId]);
 
 

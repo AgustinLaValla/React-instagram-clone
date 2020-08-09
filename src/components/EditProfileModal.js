@@ -1,5 +1,6 @@
+/* eslint-disable no-useless-escape */
 import React, { useState, useEffect, useContext } from 'react'
-import { Modal, makeStyles, ListItem, Input, TextField, Button } from '@material-ui/core';
+import { Modal, makeStyles, ListItem, TextField, Button } from '@material-ui/core';
 import { closeSVG } from '../utils/icons-data';
 import { db } from '../firebase';
 import './EditProfileModal.css';
@@ -42,7 +43,8 @@ const useStyles = makeStyles(theme => ({
         borderRadius: '15px',
         boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 4, 3),
-    }
+    },
+
 }))
 
 const actions = {
@@ -52,28 +54,165 @@ const actions = {
     CHANGE_PASSWORD: 'Change Password'
 };
 
-const DataModal = ({ open, handleClose, action, data, setData, updateUserData, }) => {
+const DataModal = ({ open, handleClose, action, data, setData, updateUserData, changePassword }) => {
     const classes = useStyles();
+
+    const [confirmPassword, setConfirmPassword] = useState(null);
+    const [disabled, setDisabled] = useState(true);
+    const [nameError, setNameError] = useState(null);
+    const [confirmPasswordNameError, setConfirmPasswordNameError] = useState(null);
+    const [touched, setTouched] = useState(false);
+    const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
+    const [dataIsValid, setDataIsValid] = useState(false);
+    const [confirnPasswordIsValid, setConfirmPasswordIsValid] = useState(false);
+
+
+    const formValidation = () => {
+
+        if (!changePassword) {
+            if (data === '' || data === null || data === undefined) {
+                setNameError('Should not be empty');
+                setDataIsValid(false);
+                return true;
+            } else {
+                setNameError(null);
+            }
+            if (action === actions.CHANGE_EMAIL) {
+                const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/i;
+
+                if (!regex.test(data)) {
+                    setNameError('Should be an email');
+                    setDataIsValid(false);
+                    return true;
+                } else {
+                    setNameError(null);
+                    setDataIsValid(true);
+                }
+            }
+            setDataIsValid(true);
+            return false;
+        } else {
+            if (data === '' || data === null || data === undefined) {
+                setNameError('Should not be empty');
+                setDataIsValid(false);
+                return true;
+            };
+            if (data !== '' && data !== null && data !== undefined && data.length > 0) {
+                setDataIsValid(true);
+                setNameError(null);
+            }
+            if (!confirmPasswordTouched) {
+                return true;
+            }
+            if (confirmPasswordTouched && data !== confirmPassword) {
+                setConfirmPasswordNameError('Passwords should match');
+                setConfirmPasswordIsValid(false);
+                return true;
+            }
+            if (confirmPasswordTouched && data === confirmPassword) {
+                setConfirmPasswordNameError(null);
+                setConfirmPasswordIsValid(true);
+            }
+
+            return false;
+        }
+
+    }
+
+    const handleChange = (event) => {
+        const { value } = event.target;
+        setData(value);
+        setTouched(true);
+    }
+
+    const handleConfirmPasswordInputChange = (event) => {
+        const { value } = event.target;
+        setConfirmPassword(value);
+        setConfirmPasswordTouched(true);
+    }
+
+    useEffect(() => {
+        return () => {
+            setTouched(false);
+            setDataIsValid(false);
+            setConfirmPasswordIsValid(false);
+            setConfirmPasswordTouched(false);
+        };
+    }, [open])
+
+    useEffect(() => {
+
+        setDisabled(formValidation);
+
+        return () => setDisabled(false);
+
+    }, [data, setData, confirmPassword, setConfirmPassword]);
 
     return (
         <Modal open={open} onClose={handleClose}>
             <div style={modalStyles} className={classes.paper}>
                 <h3 style={{ textAlign: 'center', padding: '10px 0px' }}>{action}</h3>
                 <div className='DataModal__inputBox'>
-                    <TextField
-                        value={data}
-                        onChange={(ev) => setData(ev.target.value)}
-                        fullWidth
-                        style={{ margin: 8, display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
-                        placeholder={action}
-                        label={action}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        variant="outlined"
+                    {!changePassword ?
+                        <TextField
 
-                    />
-                    <Button onClick={updateUserData} variant="contained" style={{ width: '100%' }}>Save Changes</Button>
+                            value={data}
+                            onChange={handleChange}
+                            fullWidth
+                            style={{ margin: 8, display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
+                            placeholder={action}
+                            label={action}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            variant="outlined"
+                            error={!dataIsValid && touched}
+                            helperText={!dataIsValid && touched ? nameError : null}
+                        />
+                        :
+                        <form>
+                            <TextField
+                                value={data}
+                                type="password"
+                                onChange={handleChange}
+                                fullWidth
+                                style={{ margin: 8, display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
+                                placeholder={action}
+                                label={action}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                variant="outlined"
+                                error={touched && !dataIsValid}
+                                helperText={touched && !dataIsValid ? nameError : null}
+
+                            />
+                            <TextField
+                                value={confirmPassword}
+                                type="password"
+                                onChange={handleConfirmPasswordInputChange}
+                                fullWidth
+                                style={{ margin: 8, display: 'block', marginLeft: 'auto', marginRight: 'auto' }}
+                                placeholder="Confirm password"
+                                label='Confirm'
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                variant="outlined"
+                                error={confirmPasswordTouched && !confirnPasswordIsValid}
+                                helperText={confirmPasswordNameError}
+
+                            />
+                        </form>
+                    }
+                    <Button
+                        onClick={updateUserData}
+                        variant="contained"
+                        style={{ width: '100%' }}
+                        disabled={disabled}
+                    >
+                        Save Changes
+                    </Button>
                 </div>
             </div>
         </Modal>
@@ -92,6 +231,7 @@ export const EditProfileModal = ({ open, handleClose, userData }) => {
     const [dataToChange, setDataToChange] = useState(null);
     const [action, setAction] = useState(null);
     const [propertyName, setPropertyName] = useState(null);
+    const [changePassword, setChangePassword] = useState(false);
 
     const { auth } = useContext(AuthContext);
 
@@ -103,19 +243,47 @@ export const EditProfileModal = ({ open, handleClose, userData }) => {
 
 
     const updateUserData = async () => {
-        if (action === actions.CHANGE_USERNAME || action === actions.CHANGE_EMAIL) {
+        if (action === actions.CHANGE_USERNAME || action === actions.CHANGE_EMAIL || action === actions.CHANGE_PASSWORD) {
             if (propertyName === 'username') {
-                await auth.currentUser.updateProfile({ displayName: dataToChange });
-            } else {
-                await auth.currentUser.updateProfile({email:dataToChange});
+
+                try {
+                    await auth.currentUser.updateProfile({ displayName: dataToChange });
+                } catch (error) {
+                    alert(error.message);
+                }
+
+            } else if (propertyName === 'email') {
+                try {
+                    await auth.currentUser.updateProfile({ email: dataToChange });
+                } catch (error) {
+                    alert(error.message);
+                }
+
+            } else if (propertyName === 'password') {
+                try {
+                    await auth.currentUser.updatePassword(dataToChange);
+                    alert('Password Changed');
+                    setPassword(null);
+                    resetValues();
+                } catch (error) {
+                    console.log(error);
+                    alert(error.message);
+                }
+                return;
             };
         }
         await db.collection('users').doc(userData.id).update({ [propertyName]: dataToChange });
+        propertyName === 'username' ? alert('Username Changed') : alert('Email Changed');
+        resetValues();
+    };
+
+    const resetValues = () => {
         setOpenEditDataModal(false);
         setDataToChange(null);
         setAction(null);
         setPropertyName(null);
-    };
+        handleClose();
+    }
 
     useEffect(() => {
         if (userData) {
@@ -128,16 +296,28 @@ export const EditProfileModal = ({ open, handleClose, userData }) => {
     useEffect(() => {
         switch (action) {
             case actions.CHANGE_USERNAME:
+                setChangePassword(false);
                 setPropertyName('username');
                 setDataToChange(username);
+
                 break;
             case actions.CHANGE_EMAIL:
+                setChangePassword(false);
                 setPropertyName('email');
                 setDataToChange(email);
+
                 break;
             case actions.CHANGE_DESCRIPTION:
+                setChangePassword(false);
                 setPropertyName('description');
                 setDataToChange(description);
+
+                break;
+            case actions.CHANGE_PASSWORD:
+                setChangePassword(true);
+                setPropertyName('password');
+                setDataToChange(password);
+
                 break;
             default: return;
         }
@@ -195,6 +375,7 @@ export const EditProfileModal = ({ open, handleClose, userData }) => {
                     data={dataToChange}
                     setData={setDataToChange}
                     updateUserData={updateUserData}
+                    changePassword={changePassword}
                 />
 
 

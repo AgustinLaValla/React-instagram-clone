@@ -21,7 +21,6 @@ function App() {
     return () => unsubscribe ? unsubscribe() : null;
   }, [])
 
-
   return (
     <Router>
 
@@ -32,6 +31,7 @@ function App() {
           <AuthContext.Provider value={{ userState, updateCurrentUserPic, auth }}>
             <GuardedRoute exact path="/" component={Dashboard} />
             <GuardedRoute exact path="/profile/:id/:viwerId" component={Profile} meta={{ auth: !userState }} />
+            <Redirect path="/profile/:id/:viwerId" to='/' />
             <Redirect to='/' />
           </AuthContext.Provider>
         </Switch>

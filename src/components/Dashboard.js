@@ -2,10 +2,10 @@ import React, { useState, useEffect, useContext } from 'react';
 import { Post } from './Post';
 import { SignupModal } from './SignupModal';
 import { db } from '../firebase';
-
 import './Dashboard.css'
 import { AuthContext } from '../App';
 import { PostDetails } from './PostDetails';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 export const Dashboard = () => {
 
@@ -13,6 +13,10 @@ export const Dashboard = () => {
     const [openModal, setOpenModal] = useState(false);
     const [openPostDetailsModal, setOpenPostDetailsModal] = useState(false);
     const [postId, setPostId] = useState(null);
+    const [totalPosts, setTotalPosts] = useState(0);
+    const [currentPostsLength, setCurrentPostLength] = useState(0);
+    const [postQueryLimit, setPostQueryLimit] = useState(10);
+    const [hasMore, setHasMore] = useState(true);
 
     const { userState, auth } = useContext(AuthContext);
 
@@ -31,15 +35,33 @@ export const Dashboard = () => {
     }
     const handleClose = () => openModal ? setOpenModal(false) : setOpenPostDetailsModal(false);
 
+    const getCollectionAfterScroll = async () => {
+        if (currentPostsLength < totalPosts) {
+            setPostQueryLimit(postQueryLimit + 10);
+            setHasMore(true);
+        }
 
+    }
 
     useEffect(() => {
-        db.collection('posts').orderBy('timestamp', 'desc').onSnapshot((docs) => {
-            const postsArray = [];
-            docs.docs.map(doc => postsArray.push({ ...doc.data(), id: doc.id }));
-            setPosts(postsArray);
+        const unsubscribe = db.collection('posts').orderBy('timestamp', 'desc').limit(postQueryLimit).onSnapshot((docs) => {
+            setCurrentPostLength(docs.docs.length);
+            setPosts(docs.docs.map(doc => ({ ...doc.data(), id: doc.id })))
         });
+        return () => unsubscribe();
+    }, [postQueryLimit]);
+
+    useEffect(() => {
+        const unsubscribe = db.collection('posts-counter').doc('-- post counter --').onSnapshot(snap => {
+            if (snap.exists) {
+                setTotalPosts(snap.data().totalPosts);
+            }
+        });
+
+        return () => unsubscribe();
+
     }, []);
+
 
     useEffect(() => {
         const loginTimeout = setTimeout(() => {
@@ -48,7 +70,7 @@ export const Dashboard = () => {
             }
         }, 2500);
 
-        if(userState) {
+        if (userState) {
             clearTimeout(loginTimeout);
         }
 
@@ -62,18 +84,24 @@ export const Dashboard = () => {
             <SignupModal open={openModal} handleClose={handleClose} setOpenModal={setOpenModal} auth={auth} />
 
             {/* Posts */}
-            <div className="dashboard__posts">
+            <InfiniteScroll
+                dataLength={currentPostsLength}
+                next={getCollectionAfterScroll}
+                hasMore={hasMore}
+            >
+                <div className="dashboard__posts">
 
-                {posts.map(post =>
-                    <Post id="dashboard__post" key={post.id} {...{
-                        user: userState,
-                        post: post,
-                        handleOpenModal,
-                        handleOpenPostDetailsModal
-                    }} />)
-                }
+                    {posts.map(post =>
+                        <Post id="dashboard__post" key={post.id} {...{
+                            user: userState,
+                            post: post,
+                            handleOpenModal,
+                            handleOpenPostDetailsModal
+                        }} />)
+                    }
 
-            </div>
+                </div>
+            </InfiniteScroll>
 
             {/* Post Modal */}
             <PostDetails open={openPostDetailsModal} handleClose={handleClose} postId={postId} viwerUser={userState} />
