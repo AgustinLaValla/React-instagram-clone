@@ -1,24 +1,23 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Post } from './Post';
-import { SignupModal } from './SignupModal';
-import { db } from '../firebase';
-import './Dashboard.css'
-import { AuthContext } from '../App';
-import { PostDetails } from './PostDetails';
+import React, { useState, useEffect } from 'react';
+import Post from '../post/Post';
+import SignupModal from '../signup/SignupModal';
+import  PostDetails  from '../post-details/PostDetails';
+import { db } from '../../firebase';
+import { useAuthStateProvider } from '../../App';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import './Dashboard.css'
 
-export const Dashboard = () => {
+const Dashboard = () => {
 
     const [posts, setPosts] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [openPostDetailsModal, setOpenPostDetailsModal] = useState(false);
     const [postId, setPostId] = useState(null);
     const [totalPosts, setTotalPosts] = useState(0);
-    const [currentPostsLength, setCurrentPostLength] = useState(0);
     const [postQueryLimit, setPostQueryLimit] = useState(10);
     const [hasMore, setHasMore] = useState(true);
 
-    const { userState, auth } = useContext(AuthContext);
+    const { userState, auth } = useAuthStateProvider();
 
 
     const handleOpenModal = () => !userState ? setOpenModal(true) : setOpenModal(false);
@@ -36,7 +35,7 @@ export const Dashboard = () => {
     const handleClose = () => openModal ? setOpenModal(false) : setOpenPostDetailsModal(false);
 
     const getCollectionAfterScroll = async () => {
-        if (currentPostsLength < totalPosts) {
+        if (postQueryLimit < totalPosts) {
             setPostQueryLimit(postQueryLimit + 10);
             setHasMore(true);
         }
@@ -44,10 +43,12 @@ export const Dashboard = () => {
     }
 
     useEffect(() => {
-        const unsubscribe = db.collection('posts').orderBy('timestamp', 'desc').limit(postQueryLimit).onSnapshot((docs) => {
-            setCurrentPostLength(docs.docs.length);
-            setPosts(docs.docs.map(doc => ({ ...doc.data(), id: doc.id })))
-        });
+        const unsubscribe = db.collection('posts')
+            .orderBy('timestamp', 'desc')
+            .limit(postQueryLimit)
+            .onSnapshot((docs) => {
+                setPosts(docs.docs.map(doc => ({ ...doc.data(), id: doc.id })))
+            });
         return () => unsubscribe();
     }, [postQueryLimit]);
 
@@ -85,7 +86,7 @@ export const Dashboard = () => {
 
             {/* Posts */}
             <InfiniteScroll
-                dataLength={currentPostsLength}
+                dataLength={postQueryLimit}
                 next={getCollectionAfterScroll}
                 hasMore={hasMore}
             >
@@ -109,3 +110,6 @@ export const Dashboard = () => {
         </div>
     )
 }
+
+
+export default Dashboard;

@@ -13,25 +13,30 @@
 
 .header___image {
   cursor: pointer;
+  flex: 1;
 }
 
 #search-input-header {
   height: 28px;
   min-width: 125px;
   width: 215px;
+  flex: 3;
   /* -webkit-box-align: stretch; */
   /* flex: 0 1 auto; */
+  margin-left: 25px;
 }
 
 #searchInput {
   border: 1px solid lightgray;
   line-height: 18px;
-  width: 100%;
+  width: 255px;
   height: 100%;
-  font-family: FontAwesome, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-    Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-family: FontAwesome, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   border-radius: 3px;
   padding-left: 15px;
+  display: block;
+  margin: 0 auto;
 }
 
 #searchInput::placeholder {
@@ -40,7 +45,8 @@
 }
 
 #header__icons-container {
-  display: inline-block;
+  /* display: inline-block; */
+  flex: 1;
 }
 
 .header__iconContainer {
@@ -48,10 +54,9 @@
   display: inline-block;
 }
 
-
 #header__avatar {
-    transform: translateY(2px);
-    cursor: pointer;
+  transform: translateY(2px);
+  cursor: pointer;
 }
 
 #header__avatar::before {
@@ -66,12 +71,42 @@
 }
 
 .header__icon {
-    cursor: pointer;
-  }
-  
+  cursor: pointer;
+}
+
 /* #svg-i {
   position: absolute;
   top: 50%;
   left: 50%;
   margin: -25px 0 0 -25px;
 } */
+
+@media screen and (max-width: 992px) {
+  .app__header {
+    padding: 15px 20px;
+  }
+  .header___image,
+  #search-input-header{
+    flex: 1;
+  }
+
+  #header__icons-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 0;
+  }
+
+
+}
+
+
+@media screen and (max-width: 599px) {
+  #search-input-header {
+    display: none;
+  }
+
+  #avatar__container {
+    align-self: flex-start;
+  }
+}

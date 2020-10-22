@@ -33,3 +33,14 @@
   padding-top: 5px;
   resize: 'none';
 }
+
+.MuiCircularProgress-root {
+  position: relative !important;
+}
+
+.MuiCircularProgress-svg {
+  
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%)
+}

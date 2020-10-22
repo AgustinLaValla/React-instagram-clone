@@ -1,7 +1,7 @@
 import React from 'react'
 import { Menu, MenuItem } from '@material-ui/core';
 
-export const DropdownMenu = ({ anchorEl, itemsArray, handleClose }) => {
+const DropdownMenu = ({ anchorEl, itemsArray, handleClose }) => {
 
     return (
 
@@ -27,3 +27,5 @@ export const DropdownMenu = ({ anchorEl, itemsArray, handleClose }) => {
 
     )
 }
+
+export default DropdownMenu;

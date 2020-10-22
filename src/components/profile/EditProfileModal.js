@@ -1,51 +1,15 @@
 /* eslint-disable no-useless-escape */
 import React, { useState, useEffect, useContext } from 'react'
 import { Modal, makeStyles, ListItem, TextField, Button } from '@material-ui/core';
-import { closeSVG } from '../utils/icons-data';
-import { db } from '../firebase';
+import { closeSVG } from '../../utils/icons-data';
+import { db } from '../../firebase';
 import './EditProfileModal.css';
-import { AuthContext } from '../App';
+import { AuthContext } from '../../App';
+import { setStyles } from '../../material/uiStyles';
 
 const modalStyles = { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }
 
-const useStyles = makeStyles(theme => ({
-    paper: {
-        position: 'absolute',
-        width: '400px',
-        backgroundColor: theme.palette.background.paper,
-        border: 'none',
-        outline: 'none',
-        borderRadius: '15px',
-        boxShadow: theme.shadows[5],
-    },
-    listItem: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '0px',
-        borderBottom: '1px solid lightgrey',
-        cursor: 'pointer'
-    },
-    lastListItem: {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0px',
-        justifyContent: 'center',
-        borderBottom: 'none',
-        cursor: 'pointer'
-    },
-    changeDataModal: {
-        position: 'absolute',
-        width: '400px',
-        backgroundColor: theme.palette.background.paper,
-        border: 'none',
-        outline: 'none',
-        borderRadius: '15px',
-        boxShadow: theme.shadows[5],
-        padding: theme.spacing(2, 4, 3),
-    },
-
-}))
+const useStyles = makeStyles(theme => ({...setStyles(theme)}));
 
 const actions = {
     CHANGE_USERNAME: 'Change Username',
@@ -346,25 +310,25 @@ export const EditProfileModal = ({ open, handleClose, userData }) => {
                     </div>
                 </div>
 
-                <ListItem onClick={() => openModal(actions.CHANGE_USERNAME)} alignItems='center' className={classes.listItem}>
+                <ListItem onClick={() => openModal(actions.CHANGE_USERNAME)} alignItems='center' className={classes.editProfile__listItem}>
                     <span className="editProfile__itemDescription">Change Username</span>
                 </ListItem>
 
-                <ListItem onClick={() => openModal(actions.CHANGE_DESCRIPTION)} alignItems="center" className={classes.listItem}>
+                <ListItem onClick={() => openModal(actions.CHANGE_DESCRIPTION)} alignItems="center" className={classes.editProfile__listItem}>
                     <span className="editProfile__itemDescription">
                         {userData && userData.description ? 'Change Description' : 'Add Description'}
                     </span>
                 </ListItem>
 
-                <ListItem onClick={() => openModal(actions.CHANGE_EMAIL)} alignItems="center" className={classes.listItem}>
+                <ListItem onClick={() => openModal(actions.CHANGE_EMAIL)} alignItems="center" className={classes.editProfile__listItem}>
                     <span className="editProfile__itemDescription">Change Email</span>
                 </ListItem>
 
-                <ListItem onClick={() => openModal(actions.CHANGE_PASSWORD)} alignItems="center" className={classes.listItem}>
+                <ListItem onClick={() => openModal(actions.CHANGE_PASSWORD)} alignItems="center" className={classes.editProfile__listItem}>
                     <span className="editProfile__itemDescription">Change Password</span>
                 </ListItem>
 
-                <ListItem alignItems="center" className={classes.lastListItem}>
+                <ListItem alignItems="center" className={classes.editProfile__listItem}>
                     <span className="editProfile__itemDescription">Logout</span>
                 </ListItem>
 

@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react'
 import { useDropzone } from 'react-dropzone';
-import { dropzoneStyles } from '../utils/utils';
+import { dropzoneStyles } from '../../utils/utils';
 
-const getClassName = (className, isActive) => !isActive ? `${className}` : `${className}-active`;
-
-export const Dropzone = ({ onDrop, accept, setIsDragging }) => {
+const Dropzone = ({ onDrop, accept, setIsDragging }) => {
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept });
 
@@ -12,7 +10,7 @@ export const Dropzone = ({ onDrop, accept, setIsDragging }) => {
     useEffect(() => setIsDragging(isDragActive), [isDragActive]);
 
     return (
-        <div className={getClassName('dropzone', isDragActive)} {...getRootProps()} style={dropzoneStyles}>
+        <div  {...getRootProps()} style={dropzoneStyles}>
             <input type="text" className="dropzone-input" {...getInputProps({ multiple: false })} />
             <div>
                 {isDragActive ?
@@ -29,3 +27,5 @@ export const Dropzone = ({ onDrop, accept, setIsDragging }) => {
         </div>
     )
 }
+
+export default Dropzone;

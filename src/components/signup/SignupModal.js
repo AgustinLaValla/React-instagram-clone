@@ -2,13 +2,12 @@
 import React, { useState, useEffect } from 'react'
 import { Modal, Button, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { db } from '../firebase';
-import { profilePic } from '../utils/utils';
+import { db } from '../../firebase';
+import { profilePic } from '../../utils/utils';
+import { setStyles } from '../../material/uiStyles';
 import './SignupModal.css';
 
 function getModalStyle() {
-
-
     return {
         top: '50%',
         left: '50%',
@@ -16,20 +15,9 @@ function getModalStyle() {
     };
 }
 
-const useStyles = makeStyles((theme) => ({
-    paper: {
-        position: 'absolute',
-        width: 400,
-        backgroundColor: theme.palette.background.paper,
-        border: '2px solid #000',
-        boxShadow: theme.shadows[5],
-        padding: theme.spacing(2, 4, 3),
-    },
-}));
+const useStyles = makeStyles((theme) => ({...setStyles(theme)}));
 
-
-
-export const SignupModal = ({ open, setOpenModal, handleClose, auth }) => {
+const SignupModal = ({ open, setOpenModal, handleClose, auth }) => {
     const classes = useStyles();
 
     const [modalStyle] = React.useState(getModalStyle);
@@ -158,7 +146,7 @@ export const SignupModal = ({ open, setOpenModal, handleClose, auth }) => {
             aria-labelledby="simple-modal-title"
             aria-describedby="simple-modal-description"
         >
-            <div style={modalStyle} className={classes.paper}>
+            <div style={modalStyle} className={classes.singupModal__paper}>
                 <center>
                     <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" alt="" />
                 </center>
@@ -215,8 +203,7 @@ export const SignupModal = ({ open, setOpenModal, handleClose, auth }) => {
             </div>
 
         </Modal>
-
-
     )
-
 }
+
+export default SignupModal;

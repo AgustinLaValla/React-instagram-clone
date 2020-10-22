@@ -9,3 +9,9 @@
     justify-content: center;
 
 }
+
+@media screen and (max-width: 599px) {
+    .dashboard {
+        padding: 0 20px;
+    }
+}

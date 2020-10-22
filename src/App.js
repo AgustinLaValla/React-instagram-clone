@@ -1,11 +1,12 @@
-import React, { useState, createContext, useEffect } from 'react';
-import './App.css';
+/* eslint-disable react-hooks/rules-of-hooks */
+import React, { useState, createContext, useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Switch, Redirect } from 'react-router-dom';
-import { Dashboard } from './components/Dashboard';
-import { Profile } from './components/Profile';
+import Dashboard from './components/dashboard/Dashboard';
+import { Profile } from './components/profile/Profile';
 import { GuardProvider, GuardedRoute } from 'react-router-guards';
-import { Header } from './layout/Header';
+import Header from './layout/header/Header';
 import { auth } from './firebase';
+import './App.css';
 
 export const AuthContext = createContext(null);
 const requireLogin = (to, from, next) => to.meta.auth ? next.redirect('/') : next()
@@ -14,7 +15,7 @@ function App() {
 
   const [userState, setUserState] = useState(null);
 
-  const updateCurrentUserPic = async (profilePic) => await auth.updateCurrentUser({photoURL:profilePic})
+  const updateCurrentUserPic = async (profilePic) => await auth.updateCurrentUser({ photoURL: profilePic })
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authState) => setUserState(authState));
@@ -41,5 +42,7 @@ function App() {
 
   );
 }
+
+export const useAuthStateProvider = () => useContext(AuthContext);
 
 export default App;

@@ -1,6 +1,6 @@
 .post {
     background-color: white;
-    max-width: 500px;
+    max-width: 600px;
     border: 1px solid lightgray;
     margin-bottom: 45px;
     
@@ -37,8 +37,6 @@
 .post__iconContainer {
     display: inline-block;
     padding-left: 20px;
-    /* cursor: pointer; */
-    /* border: 2px solid black  ; */
 }
 
 .post__iconContainer svg {
@@ -57,11 +55,12 @@
 
 .post__input {
     border: 1px solid gray;
-    flex:1;
+    flex:5;
     padding: 10px;
 }
 .post__button {
-    flex:0
+    flex:1;
+    cursor: pointer;
 }
 #comments-box {
     overflow-y: scroll;
