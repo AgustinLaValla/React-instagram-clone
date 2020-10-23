@@ -17,7 +17,6 @@ export const LargeScreenModal = ({classes, currentPost, currentUser, viwerUser, 
                     username={currentPost.username}
                     currentUser={currentUser}
                     viwerUser={viwerUser}
-
                 />
 
 

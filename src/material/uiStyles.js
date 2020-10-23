@@ -209,5 +209,8 @@ export const setStyles = (theme) => ({
         border: '2px solid #000',
         boxShadow: theme.shadows[5],
         padding: theme.spacing(2, 4, 3),
+        [theme.breakpoints.down('sm')] : {
+            width: '80%'
+        }
     },
 });

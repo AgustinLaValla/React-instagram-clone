@@ -49,7 +49,8 @@ const PostDetails = ({ open, handleClose, postId, viwerUser, breakPostModal }) =
                                 currentPost,
                                 currentUser,
                                 viwerUser,
-                                postId
+                                postId,
+                                handleClose
                             }
                         } 
                         />

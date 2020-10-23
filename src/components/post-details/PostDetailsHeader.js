@@ -3,12 +3,13 @@ import ListItem from '@material-ui/core/ListItem';
 import Divider from '@material-ui/core/Divider';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
+import ArrowBackIosIcon from './icons/ArrowBackIosIcon';
 import { profilePic } from '../../utils/utils';
 import { db } from '../../firebase';
 import './PostDetails.css';
 import { useIsFollowing } from './hooks/useIsFollowing';
 
-const PostDetailsHeader = ({ classes, username, currentUser, viwerUser }) => {
+const PostDetailsHeader = ({ classes, username, currentUser, viwerUser, handleClose }) => {
 
     const [following, setIsFollowing] = useState(false);
     const isFollowing = useIsFollowing(viwerUser, currentUser, following);
@@ -33,7 +34,11 @@ const PostDetailsHeader = ({ classes, username, currentUser, viwerUser }) => {
 
     return (
         <div>
-            <ListItem alignItems="flex-start"  className={classes.postDetails__listItem}>
+            <div className="postDetails__headerTop">
+                <ArrowBackIosIcon onClick={handleClose}/>
+                <h5 style={{textAlign:'center'}}>Photo</h5>
+            </div>
+            <ListItem alignItems="flex-start" className={classes.postDetails__listItem}>
                 <ListItemAvatar>
                     <Avatar alt={username} src={currentUser ? currentUser.profilePic : profilePic}></Avatar>
                 </ListItemAvatar>

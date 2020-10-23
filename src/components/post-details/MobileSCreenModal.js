@@ -4,7 +4,7 @@ import PostDetailsComments from './PostDetailsComments';
 import PostDetailsHeader from './PostDetailsHeader'
 import PostImage from './PostImage';
 
-const MobileSCreenModal = ({ classes, currentPost, currentUser, viwerUser, postId }) => {
+const MobileSCreenModal = ({ classes, currentPost, currentUser, viwerUser, postId, handleClose }) => {
     return (
         <div className={`${classes.postDetails__paper} postDetails__container`}>
             <PostDetailsHeader
@@ -12,6 +12,8 @@ const MobileSCreenModal = ({ classes, currentPost, currentUser, viwerUser, postI
                 username={currentPost.username}
                 currentUser={currentUser}
                 viwerUser={viwerUser}
+                handleClose={handleClose}
+
             />
             <PostImage imageUrl={currentPost.imageUrl} />
             <PostDetailsComments
