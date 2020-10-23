@@ -11,6 +11,7 @@ import PostContent from './PostContent';
 import PostIcons from './PostIcons';
 import PostComments from './PostComments';
 import PostForm from './PostForm';
+import { usePostComments } from '../../utils/hooks';
 import './Post.css';
 
 const useStyles = makeStyles((theme) => ({ ...setStyles(theme) }));
@@ -20,7 +21,7 @@ const Post = ({ post, user, handleOpenModal, handleOpenPostDetailsModal }) => {
     const classes = useStyles();
     const history = useHistory();
 
-    const [comments, setComments] = useState([]);
+    const comments = usePostComments(post)
     const [comment, setComment] = useState('');
     const [likeIcon, setLikeIcon] = useState(unLikeSvg);
 
@@ -56,17 +57,6 @@ const Post = ({ post, user, handleOpenModal, handleOpenPostDetailsModal }) => {
         }
     }, [post, user])
 
-    useEffect(() => {
-        let unsubscribe;
-        if (post && post.id) {
-            unsubscribe = db.collection('posts').doc(post.id).collection('comments').orderBy('timestamp', 'asc').onSnapshot((snap) => {
-                setComments(snap.docs.map(doc => ({ ...doc.data(), id: doc.id })));
-            });
-        }
-
-        return () => unsubscribe();
-
-    }, [post]);
 
     return (
         <div className="post">

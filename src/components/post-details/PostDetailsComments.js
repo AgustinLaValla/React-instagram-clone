@@ -7,29 +7,26 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
 import { getTimeStamp } from '../../utils/utils';
 import { db } from '../../firebase';
+import { usePostComments } from '../../utils/hooks';
+import PostDetailsCaption from './PostDetailsCaption';
 
-const PostDetailsComments = ({ classes, currentPost }) => {
+const PostDetailsComments = ({ classes, currentPost, currentUser }) => {
 
-    const [comments, setComments] = useState([]);
+    const comments = usePostComments(currentPost);
 
     const getUserProfilePic = async (userId) => {
         const user = await db.collection('users').doc(userId).get();
         return user.data().profilePic;
     }
 
-    useEffect(() => {
-        let unsubcribe;
-        if (currentPost) {
-            unsubcribe = db.collection('posts').doc(currentPost.id).collection('comments').orderBy('timestamp', 'asc').onSnapshot(docs => {
-                setComments(docs.docs.map(doc => ({ ...doc.data(), id: doc.id })));
-            });
 
-        }
-        return () => unsubcribe ? unsubcribe() : null;
-
-    }, [currentPost])
     return (
         <List id="comment-list" className={classes.postDetails__list}>
+            <PostDetailsCaption
+                classes={classes}
+                currentUser={currentUser}
+                currentPost={currentPost}
+            />
 
             {comments.map(comment => (
                 <ListItem alignItems="flex-start" className={classes.postDetails__comment}>

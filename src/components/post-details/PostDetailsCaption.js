@@ -9,7 +9,7 @@ import './PostDetails.css';
 
 const PostDetailsCaption = ({ currentUser, currentPost, classes }) => {
     return (
-        <ListItem alignItems="flex-start" className={`${classes.postDetails__captionContainer} captionContainer`}>
+        <ListItem alignItems="flex-start" id="captionContainer" className={`${classes.postDetails__captionContainer}`}>
             <ListItemAvatar>
                 <Avatar alt={currentPost.username} src={currentUser ? currentUser.profilePic : profilePic}></Avatar>
             </ListItemAvatar>

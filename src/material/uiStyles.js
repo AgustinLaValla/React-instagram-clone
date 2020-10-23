@@ -32,7 +32,7 @@ export const setStyles = (theme) => ({
         borderRadius: '15px',
         boxShadow: theme.shadows[5],
         [theme.breakpoints.down('sm')]: {
-            width: '300px'
+            width: '85%'
         }
     },
     editProfile__listItem: {
@@ -158,13 +158,10 @@ export const setStyles = (theme) => ({
         alignItems: 'center',
         paddingBottom: '20px',
         position: 'sticky',
-        flex: 1,
+        flex: '1 0',
         maxHeight: '75px'
     },
     postDetails__captionContainer: {
-        flex: 1,
-        maxHeight: 76,
-        overflowY: 'scroll'
     },
 
     postDetails__listItemText: {
@@ -189,7 +186,9 @@ export const setStyles = (theme) => ({
         outline: 'none',
         borderRadius: '15px',
         boxShadow: theme.shadows[5],
-
+        [theme.breakpoints.down('sm')] : {
+            width: '85%'
+        }
 
     },
     ffModal__listItem: {

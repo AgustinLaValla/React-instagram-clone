@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { db } from '../../firebase';
 import './FollowingFollowersModal.css';
+import { useFollowingList } from './hooks/useFollowingList';
 import UserItem from './UserItem';
 
 const UsersList = ({ data, viwerId, listLength, onscroll, classes }) => {
 
-    const [viwerFollowingList, setViwerFollowingList] = useState([]);
+    const viwerFollowingList = useFollowingList(viwerId);
 
     const follow = (id) => {
         db.collection('users').doc(id).collection('followers').doc(viwerId).set({ follower: viwerId });
@@ -20,13 +21,6 @@ const UsersList = ({ data, viwerId, listLength, onscroll, classes }) => {
 
     const isFollowing = (userId) => viwerFollowingList.find(userFollowedId => userFollowedId === userId);
 
-    useEffect(() => {
-        const unsubscribe = db.collection('users').doc(viwerId).collection('following').onSnapshot((snap) => {
-            setViwerFollowingList(snap.docs.map(doc => doc.data().userFollowed));
-        });
-
-        return () => unsubscribe ? unsubscribe() : null
-    }, [viwerId])
     return (
         <InfiniteScroll
             dataLength={listLength}

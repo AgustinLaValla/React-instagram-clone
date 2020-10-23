@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import Post from '../post/Post';
 import SignupModal from '../signup/SignupModal';
-import  PostDetails  from '../post-details/PostDetails';
-import { db } from '../../firebase';
+import PostDetails from '../post-details/PostDetails';
 import { useAuthStateProvider } from '../../App';
+import { useGetPosts } from './hooks/useGetPosts';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import './Dashboard.css'
+import { usePostsCounter } from './hooks/usePostsCounter';
+import { useResizeListener } from '../../utils/hooks';
 
 const Dashboard = () => {
 
-    const [posts, setPosts] = useState([]);
     const [openModal, setOpenModal] = useState(false);
     const [openPostDetailsModal, setOpenPostDetailsModal] = useState(false);
     const [postId, setPostId] = useState(null);
-    const [totalPosts, setTotalPosts] = useState(0);
+
     const [postQueryLimit, setPostQueryLimit] = useState(10);
     const [hasMore, setHasMore] = useState(true);
+
+    const breakPostModal = useResizeListener();
+
+    const posts = useGetPosts(postQueryLimit);
+    const totalPosts = usePostsCounter();
 
     const { userState, auth } = useAuthStateProvider();
 
@@ -41,27 +47,6 @@ const Dashboard = () => {
         }
 
     }
-
-    useEffect(() => {
-        const unsubscribe = db.collection('posts')
-            .orderBy('timestamp', 'desc')
-            .limit(postQueryLimit)
-            .onSnapshot((docs) => {
-                setPosts(docs.docs.map(doc => ({ ...doc.data(), id: doc.id })))
-            });
-        return () => unsubscribe();
-    }, [postQueryLimit]);
-
-    useEffect(() => {
-        const unsubscribe = db.collection('posts-counter').doc('-- post counter --').onSnapshot(snap => {
-            if (snap.exists) {
-                setTotalPosts(snap.data().totalPosts);
-            }
-        });
-
-        return () => unsubscribe();
-
-    }, []);
 
 
     useEffect(() => {
@@ -105,7 +90,13 @@ const Dashboard = () => {
             </InfiniteScroll>
 
             {/* Post Modal */}
-            <PostDetails open={openPostDetailsModal} handleClose={handleClose} postId={postId} viwerUser={userState} />
+            <PostDetails
+                open={openPostDetailsModal}
+                handleClose={handleClose}
+                postId={postId}
+                viwerUser={userState}
+                breakPostModal={breakPostModal}
+            />
 
         </div>
     )

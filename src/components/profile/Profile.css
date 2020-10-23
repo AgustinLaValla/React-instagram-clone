@@ -105,11 +105,11 @@
 .pic__container {
   position: relative;
 }
-.pic__container::before {
+/* .pic__container::before {
   content: "";
   display: inline-block;
   padding-bottom: calc( 100% / (var(--grid-aspect-ratio)));
-}
+} */
 .profile__pic {
   width: 100%;
   height: 100%;

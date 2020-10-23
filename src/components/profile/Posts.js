@@ -1,27 +1,20 @@
 import React from 'react'
+import Post from './Post'
 
 const Posts = ({ posts, handleOpenModal }) => {
     return (
         <main className="profile__picsContainer">
-            {posts.map(post =>
-                <div key={post.postId} className="pic__container" onClick={() => handleOpenModal(post.postId)}>
-                    <img className="profile__pic" src={post.imageUrl} alt={post.username} />
-                    <div className="icons__container">
-                        <div className="icon">
-                            <i className="material-icons">favorite</i>
-                            <span>{post.likes.length}</span>
-                        </div>
-                        <div className="icon">
-                            <i className="material-icons">mode_comment</i>
-                            <span>{post.comments.length}</span>
-                        </div>
-                    </div>
-
-                </div>
-            )
+            {
+                posts.map(post =>
+                    <Post
+                        key={post.id}
+                        post={post}
+                        openPost={() => handleOpenModal(post.postId)}
+                    />
+                )
             }
         </main>
     )
 }
 
-export default Posts
+export default Posts;

@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 import { db } from '../../firebase';
 import SignupModal from '../../components/signup/SignupModal';
-import { profilePic } from '../../utils/utils';
 import UploadImageModal from '../../components/upload-image/UploadImageModal';
 import HeaderMenu from './HeaderMenu';
 import HomeIcon from './HomeIcon';
 import PostIcon from './PostIcon';
 import UserMenu from './UserMenu';
+import { useProfilePic } from './hooks/useProfilePic';
 import './Header.css';
 
 
@@ -20,7 +20,7 @@ const Header = ({ userState, auth }) => {
     const [openModal, setOpenModal] = useState(false);
     const [openUploadImageModal, setOpenUploadImageModal] = useState(false);
 
-    const [profilePicUrl, setProfilePicUrl] = useState(profilePic);
+    const profilePicUrl = useProfilePic(userState);
 
 
     const searchUsers = async (text, anchorElement) => {
@@ -36,19 +36,6 @@ const Header = ({ userState, auth }) => {
 
     const handleCloseModal = () => openModal ? setOpenModal(false) : setOpenUploadImageModal(false);
 
-    useEffect(() => {
-        let unsubscribe;
-        if (userState) {
-            unsubscribe = db.collection('users').doc(userState.uid).onSnapshot((doc) => {
-                setProfilePicUrl(doc.data().profilePic);
-            })
-        } else {
-            setProfilePicUrl(profilePic);
-        }
-
-        return () => unsubscribe ? unsubscribe() : null;
-
-    }, [userState])
 
     return (
         <div className="app__header">
